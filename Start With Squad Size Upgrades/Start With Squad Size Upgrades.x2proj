@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Default" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Guid>974af346-975a-472e-b00d-edc44324b264</Guid>
+    <Name>Start with Squad Size Upgrades</Name>
+    <Description>Begin the game with the squad size upgrades unlocked. This will allow you to start the game with 6 soliders but you won't be able to upgrade the size further.
+
+I recommend using with something like Increased Enemy Squad Size, in combination they'll make the early game easier and the late game harder.</Description>
+    <SteamPublishID>0</SteamPublishID>
+    <AssemblyName>Start With Squad Size Upgrades</AssemblyName>
+    <RootNamespace>Start With Squad Size Upgrades</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Config\" />
+    <Folder Include="Content\" />
+    <Folder Include="Localization\" />
+    <Folder Include="Src\" />
+    <Folder Include="Src\StartwithSquadSizeUpgrades\" />
+    <Folder Include="Src\StartwithSquadSizeUpgrades\Classes\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ReadMe.txt" />
+    <Content Include="ModPreview.jpg" />
+    <Content Include="Config\XComEditor.ini" />
+    <Content Include="Config\XComEngine.ini" />
+    <Content Include="Config\XComGame.ini" />
+    <Content Include="Localization\XComGame.int" />
+    <Content Include="Src\StartwithSquadSizeUpgrades\Classes\SquadSizeUpgrades_UIScreenListener.uc" />
+  </ItemGroup>
+  <Import Project="$(MSBuildLocalExtensionPath)\XCOM2.targets" />
+</Project>
