@@ -1,24 +1,11 @@
 class SquadSizeUpgrades_UIScreenListener extends UIScreenListener;
 
-var XComGameState_HeadquartersXCom XComHQ;
-
 event OnReceiveFocus(UIScreen Screen)
 {
 	if(IsStrategyState())
     {
-		XComHQ = class'UIUtilities_Strategy'.static.GetXComHQ();
-
-		if (!UnlockedExtraSlot1()) 
-		{
-			`log("Giving unlock SquadSizeIUnlock");
-			GiveSoldierUnlock('SquadSizeIUnlock');
-		}
-
-		if (!UnlockedExtraSlot2())
-		{ 
-			`log("Giving unlock SquadSizeIIUnlock");
-			GiveSoldierUnlock('SquadSizeIIUnlock');    
-		}
+		GiveSoldierUnlock('SquadSizeIUnlock');
+		GiveSoldierUnlock('SquadSizeIIUnlock');    
 	}
 }
 
@@ -27,27 +14,37 @@ function bool IsStrategyState()
     return `HQGAME != none && `HQPC != None && `HQPRES != none;
 }
 
-function bool UnlockedExtraSlot1()
-{
-	return XComHQ.SoldierUnlockTemplates.Find('SquadSizeIUnlock') != INDEX_NONE;
-}
-
-function bool UnlockedExtraSlot2()
-{
-	return XComHQ.SoldierUnlockTemplates.Find('SquadSizeIIUnlock') != INDEX_NONE;
-}
-
 function GiveSoldierUnlock(Name UnlockName)
 {
 	local XComGameState NewGameState;
 	local XComGameState_HeadquartersXCom XComHQ;
+	local XComGameStateHistory History;
+	
+	History = `XCOMHISTORY;
+	XComHQ = XComGameState_HeadquartersXCom(History.GetSingleGameStateObjectForClass(class'XComGameState_HeadquartersXCom'));
 
-	if(XComHQ.AddSoldierUnlockTemplate(NewGameState, X2SoldierUnlockTemplate(class'X2StrategyElementTemplateManager'.static.GetStrategyElementTemplateManager().FindStrategyElementTemplate(UnlockName))) )
+	if (XComHQ.SoldierUnlockTemplates.Find(UnlockName) == INDEX_NONE) 
 	{
-		`XCOMGAME.GameRuleset.SubmitGameState(NewGameState);
-	}
+		`log("Giving unlock: " @ UnlockName);
+
+		NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("OTS Ability Unlock -" @ UnlockName);
+
+		XComHQ = XComGameState_HeadquartersXCom(NewGameState.CreateStateObject(class'XComGameState_HeadquartersXCom', XComHQ.ObjectID));
+	    NewGameState.AddStateObject(XComHQ);
+
+		if(XComHQ.AddSoldierUnlockTemplate(NewGameState, X2SoldierUnlockTemplate(class'X2StrategyElementTemplateManager'.static.GetStrategyElementTemplateManager().FindStrategyElementTemplate(UnlockName))) )
+		{
+			`log("Unlock: " @ UnlockName);
+			`XCOMGAME.GameRuleset.SubmitGameState(NewGameState);
+		}
+		else
+		{
+			`log("Failed to unlock: " @ UnlockName);
+			`XCOMHISTORY.CleanupPendingGameState(NewGameState);
+		}
+	} 
 	else
 	{
-		`XCOMHISTORY.CleanupPendingGameState(NewGameState);
+		`log("Already unlocked: " @ UnlockName);
 	}
 }
